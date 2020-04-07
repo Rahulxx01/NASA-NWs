@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.dataGson.NearEarthObjects
+
 
 
 @Dao
