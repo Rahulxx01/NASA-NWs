@@ -7,5 +7,5 @@ interface AsteroidRepository {
 
     suspend fun getAsteroidData() : LiveData<out List<Asteroid>>
 
-
+    //suspend fun getAsteroidData() : LiveData<out List<Asteroid>>
 }

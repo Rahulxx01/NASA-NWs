@@ -25,4 +25,8 @@ interface AsteroidDao {
     fun deleteOldAsteroidData()
 
 
+    @Query("select * from current_asteroids where closeApproachDate >= :todayDate")
+    fun getAsteroidData(todayDate: String): LiveData<List<Asteroid>>
+
+
 }

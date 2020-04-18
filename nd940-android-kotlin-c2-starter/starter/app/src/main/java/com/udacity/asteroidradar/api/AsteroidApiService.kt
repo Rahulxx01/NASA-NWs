@@ -6,6 +6,7 @@ import com.udacity.asteroidradar.model.CurrentAsteroidResponse
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -33,7 +34,7 @@ interface AsteroidApiService {
     fun getAsteroidsMoshiData(
         @Query("start_date") start_date : String,
         @Query("end_date") end_date : String
-    ): Deferred<CurrentAsteroidResponse>
+    ): Call<CurrentAsteroidResponse>
 
 
 
@@ -63,13 +64,13 @@ interface AsteroidApiService {
 
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)
-                .addInterceptor(connectivityInterceptor)
+                //.addInterceptor(connectivityInterceptor)
                 .build()
 
             return Retrofit.Builder()
                 .client(okHttpClient)
                 .baseUrl("https://api.nasa.gov/neo/rest/v1/")
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                //.addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build()
                 .create(AsteroidApiService::class.java )

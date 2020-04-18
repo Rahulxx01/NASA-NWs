@@ -9,7 +9,7 @@ import com.udacity.asteroidradar.db.AsteroidDao
 
 @Database(
     entities = [ImageModel::class],
-    version = 1
+    version =1
 )
 abstract class ImageDatabase : RoomDatabase() {
     abstract fun asteroidDao() : ImageDao

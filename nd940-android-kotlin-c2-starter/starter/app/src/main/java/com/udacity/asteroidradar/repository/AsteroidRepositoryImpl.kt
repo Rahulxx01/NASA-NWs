@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.repository
 
 import androidx.lifecycle.LiveData
+import androidx.work.WorkManager
 import com.google.gson.Gson
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.api.AsteroidNetworkDataSource
@@ -15,13 +16,17 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
-class AsteroidRepositoryImpl(
+open class AsteroidRepositoryImpl(
     private val asteroidDao: AsteroidDao,
     private val asteroidNetworkDataSource: AsteroidNetworkDataSource
 ) : AsteroidRepository {
+
+
 
     init {
         asteroidNetworkDataSource.downloadedCurrentAsteroids.observeForever {
@@ -31,12 +36,15 @@ class AsteroidRepositoryImpl(
     override suspend fun getAsteroidData(): LiveData<out List<Asteroid>> {
         initAsteroidData()
         return withContext(Dispatchers.IO) {
-            asteroidDao.getAsteroidData()
+
+            val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val now: LocalDateTime = LocalDateTime.now()
+            asteroidDao.getAsteroidData(now.toString())
         }
     }
 
 
-    private fun persistFetchCurrentAsteroid(fetchedAsteroid :  CurrentAsteroidResponse){
+    public fun persistFetchCurrentAsteroid(fetchedAsteroid :  CurrentAsteroidResponse){
 
         fun deleteForeCastAsteroidData(){
             asteroidDao.deleteOldAsteroidData()
@@ -53,18 +61,18 @@ class AsteroidRepositoryImpl(
         }
     }
 
-    private suspend fun initAsteroidData(){
+    public suspend fun initAsteroidData(){
         if(isFetechCurrentNeeded(ZonedDateTime.now())){
                 fetchCurrentAsteroid()
         }
     }
 
-    private suspend fun fetchCurrentAsteroid(){
+    public suspend fun fetchCurrentAsteroid(){
         val dateList = getNextSevenDaysFormattedDates()
         asteroidNetworkDataSource.fetechCurrentAsteroids(dateList[0].toString(),dateList[dateList.size-1].toString());
     }
 
-    private fun isFetechCurrentNeeded(lastFetechTime : ZonedDateTime) : Boolean {
+    public fun isFetechCurrentNeeded(lastFetechTime : ZonedDateTime) : Boolean {
         val oneDayAgo = ZonedDateTime.now().minusDays(1)
         return lastFetechTime.isAfter(oneDayAgo)
     }
