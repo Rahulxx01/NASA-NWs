@@ -6,6 +6,7 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.impl.Schedulers
 import com.google.gson.Gson
+import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.api.ApiService
 import com.udacity.asteroidradar.api.ServiceBuilder
 import com.udacity.asteroidradar.api.getNextSevenDaysFormattedDates
@@ -49,7 +50,8 @@ class MyWorker(context: Context, workerParams: WorkerParameters) : Worker(contex
                 val mJSONObject = JSONObject(jsonInString)
                 val asteroidList  = parseAsteroidsJsonResult(mJSONObject)
                 //AsteroidDatabase(applicationContext).asteroidDao().upsert(asteroidList)
-
+                val dataBaseRunnable  = DatabaseRunnable(asteroidList)
+                Thread(dataBaseRunnable).start()
 
 
             }
@@ -63,6 +65,17 @@ class MyWorker(context: Context, workerParams: WorkerParameters) : Worker(contex
         return Result.success()
 
     }
+
+
+
+  inner class DatabaseRunnable(asteriodList: ArrayList<Asteroid>) : Runnable {
+       val list = asteriodList
+       override fun run() {
+           AsteroidDatabase(applicationContext).asteroidDao().upsert(list)
+
+       }
+
+   }
 
 
 
